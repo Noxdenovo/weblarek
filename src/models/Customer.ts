@@ -8,7 +8,7 @@ interface Errors {
 }
 
 export class Customer {
-  customerData: iCustomer;
+  private customerData: iCustomer;
 
   constructor(data?: Partial<iCustomer>) {
     this.customerData = {
@@ -28,7 +28,7 @@ export class Customer {
   }
 
   validateData(): Errors {
-    let errors: Errors = {
+    const errors: Errors = {
       payment: undefined,
       address: undefined,
       email: undefined,

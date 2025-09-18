@@ -2,30 +2,33 @@ import { Product } from '../types';
 
 export class Catalogue {
   private itemList: Product[];
-  private selectedItem: Product;
+  private selectedItem: Product | null;
 
-  constructor(products: Product[] = [], item?: Product) {
+  constructor(products: Product[] = [], item: Product | null = null) {
     this.itemList = products;
-    this.selectedItem = {
-      id: item?.id ?? '',
-      description: item?.description ?? '',
-      image: item?.image ?? '',
-      title: item?.title ?? '',
-      category: item?.category ?? '',
-      price: item?.price ?? null,
-    };
+
+    if (item) {
+      this.selectedItem = {
+        id: item.id,
+        description: item.description,
+        image: item.image,
+        title: item.title,
+        category: item.category,
+        price: item.price,
+      };
+    } else this.selectedItem = item;
   }
 
-  getSelectedItem(): Product {
+  getSelectedItem(): Product | null {
     return this.selectedItem;
   }
 
-  setSelectedItem(item: Product): void {
+  setSelectedItem(item: Product | null): void {
     this.selectedItem = item;
   }
 
   getItemById(id: string): Product | undefined {
-    let query = this.itemList.find((item) => item.id === id);
+    const query = this.itemList.find((item) => item.id === id);
     return query;
   }
 

@@ -150,13 +150,13 @@ address:string
 
 Поля класса:
 
-itemList:Product[] - массив товаров
-selectedItem:Product - выбранная карточка товара, которая отображается в отдельном модальном окне
+itemList: Product[] - массив товаров
+selectedItem: Product | null - выбранная карточка товара, которая отображается в отдельном модальном окне. Принимает значение null, когда карточка не выбрана
 
 Методы класса:
 
-getSelectedItem():Product - получение выбранной карточки
-setSelectedItem(product: Product):void - сохранение выбранной карточки
+getSelectedItem():Product | null - получение выбранной карточки или null, когда карточка не выбрана
+setSelectedItem(product: Product | null):void - сохранение выбранной карточки
 getItemById(id: string): Product - получение товара по id из сохраненного списка товаров
 setItemList(productList: Product[]): void - сохранение списка товаров
 getItemList():Product - получение списка товаров

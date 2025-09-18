@@ -17,6 +17,10 @@ catalogue.setSelectedItem(apiProducts.items[1]);
 
 console.log('Выбранный продукт:', catalogue.getSelectedItem());
 
+catalogue.setSelectedItem(null);
+
+console.log('Значение выбранного продукта, когда продукт не выбран:', catalogue.getSelectedItem());
+
 console.log('Поиск продукта по id', catalogue.getItemById('c101ab44-ed99-4a54-990d-47aa2bb4e7d9'));
 console.log(
   'поиск продукта по id, которого нет в списке',

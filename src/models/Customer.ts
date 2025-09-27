@@ -1,3 +1,4 @@
+import { IEvents } from '../components/base/Events';
 import { iCustomer } from '../types';
 
 interface Errors {
@@ -10,7 +11,7 @@ interface Errors {
 export class Customer {
   private customerData: iCustomer;
 
-  constructor(data?: Partial<iCustomer>) {
+  constructor(events: IEvents, data?: Partial<iCustomer>) {
     this.customerData = {
       payment: data?.payment ?? '',
       address: data?.address ?? '',

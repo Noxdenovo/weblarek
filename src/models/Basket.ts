@@ -1,9 +1,13 @@
+import { IEvents } from '../components/base/Events';
 import { Product } from '../types';
 
 export class Basket {
   private itemList: Product[];
 
-  constructor(items: Product[] = []) {
+  constructor(
+    protected events: IEvents,
+    items: Product[] = []
+  ) {
     this.itemList = items;
   }
 
@@ -18,6 +22,7 @@ export class Basket {
       if (!this.isItemInBasket(item.id)) {
         this.itemList.push(item);
       } else throw new Error('item already in basket');
+      this.events.emit('basket:change');
     } catch (err) {
       console.log(err);
     }
@@ -25,6 +30,7 @@ export class Basket {
 
   removeItem(item: Product): void {
     this.itemList = this.itemList.filter((product) => product.id != item.id);
+    this.events.emit('basket:change');
   }
 
   getItemList(): Product[] {
@@ -47,5 +53,6 @@ export class Basket {
 
   clearBasket(): void {
     this.itemList = [];
+    this.events.emit('basket:change');
   }
 }

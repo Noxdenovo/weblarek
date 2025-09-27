@@ -1,10 +1,15 @@
+import { IEvents } from '../components/base/Events';
 import { Product } from '../types';
 
 export class Catalogue {
   private itemList: Product[];
   private selectedItem: Product | null;
 
-  constructor(products: Product[] = [], item: Product | null = null) {
+  constructor(
+    protected events: IEvents,
+    products: Product[] = [],
+    item: Product | null = null
+  ) {
     this.itemList = products;
 
     if (item) {
@@ -25,6 +30,8 @@ export class Catalogue {
 
   setSelectedItem(item: Product | null): void {
     this.selectedItem = item;
+
+    this.events.emit('selectedItem:change');
   }
 
   getItemById(id: string): Product | undefined {
@@ -34,6 +41,8 @@ export class Catalogue {
 
   setItemList(itemList: Product[]): void {
     this.itemList = itemList;
+
+    this.events.emit('catalogue:change');
   }
 
   getItemList(): Product[] {

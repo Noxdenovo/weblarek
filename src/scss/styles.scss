@@ -15,7 +15,8 @@
 @use "../common.blocks/basket";
 @use "../common.blocks/order";
 @use "../common.blocks/order-success";
-
+@use "../common.blocks/basketEmptyMessage.scss";
+@use "../common.blocks/no-scroll.scss";
 
 @use "variables" as *;
 @use "mixins";

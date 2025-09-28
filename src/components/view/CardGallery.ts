@@ -1,8 +1,8 @@
-import { Product } from '../types';
-import { ensureElement } from '../utils/utils';
+import { Product } from '../../types';
+import { ensureElement } from '../../utils/utils';
 import { Card } from './Card';
-import { categoryMap } from '../utils/constants';
-import { CDN_URL } from '../utils/constants';
+import { categoryMap } from '../../utils/constants';
+import { CDN_URL } from '../../utils/constants';
 type TCardGallery = Pick<Product, 'image' | 'category' | 'title' | 'price'>;
 
 export interface ICardActions {

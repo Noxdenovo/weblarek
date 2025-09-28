@@ -1,4 +1,4 @@
-import { Component } from '../components/base/Component';
+import { Component } from '../base/Component';
 
 type TCardList = { cards: HTMLElement };
 

@@ -1,9 +1,9 @@
 import { Card } from './Card';
-import { Product } from '../types';
-import { ensureElement } from '../utils/utils';
-import { categoryMap } from '../utils/constants';
+import { Product } from '../../types';
+import { ensureElement } from '../../utils/utils';
+import { categoryMap } from '../../utils/constants';
 import { CategoryKey } from './CardGallery';
-import { CDN_URL } from '../utils/constants';
+import { CDN_URL } from '../../utils/constants';
 import { ICardActions } from './CardGallery';
 
 export class CardPreview extends Card<Product> {
@@ -44,5 +44,9 @@ export class CardPreview extends Card<Product> {
 
   set buttonText(text: string) {
     this.cardButtonElement.textContent = text;
+  }
+
+  setButtonOff() {
+    this.cardButtonElement.disabled = true;
   }
 }

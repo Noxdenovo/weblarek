@@ -6,19 +6,20 @@ import { Customer } from './models/Customer';
 import { Api } from './components/base/Api';
 import { ProductApi } from './communication/ProductApi';
 import { API_URL } from './utils/constants';
-import { Header } from './view/Header';
+import { Header } from './components/view/Header';
 import { cloneTemplate, ensureElement } from './utils/utils';
 import { EventEmitter } from './components/base/Events';
-import { Gallery } from './view/Gallery';
-import { CardGallery } from './view/CardGallery';
-import { Modal } from './view/Modal';
-import { CardPreview } from './view/CardPreview';
-import { BasketView } from './view/BasketView';
+import { Gallery } from './components/view/Gallery';
+import { CardGallery } from './components/view/CardGallery';
+import { Modal } from './components/view/Modal';
+import { CardPreview } from './components/view/CardPreview';
+import { BasketView } from './components/view/BasketView';
 import { iCustomer, Product } from './types';
-import { renderCardBasketList } from './view/CardBasket';
-import { OrderForm } from './view/OrderForm';
-import { ContactForm } from './view/ContactForm';
-import { SuccessView } from './view/SuccessView';
+import { CardBasket } from './components/view/CardBasket';
+import { OrderForm } from './components/view/OrderForm';
+import { ContactForm } from './components/view/ContactForm';
+import { SuccessView } from './components/view/SuccessView';
+import { IEvents } from './components/base/Events';
 
 const events = new EventEmitter();
 const catalogue = new Catalogue(events);
@@ -47,6 +48,18 @@ const successView = new SuccessView(cloneTemplate('#success'), {
     modal.closeModal();
   },
 });
+
+function renderCardBasketList(items: Product[], events: IEvents) {
+  const itemsToRender = items.map((item) => {
+    const card = new CardBasket(cloneTemplate('#card-basket'), {
+      onClick: () => {
+        events.emit('basket:remove', item);
+      },
+    });
+    return card.render({ price: item.price, title: item.title, index: items.indexOf(item) + 1 });
+  });
+  return itemsToRender;
+}
 
 productApi
   .get()
@@ -84,7 +97,12 @@ events.on('selectedItem:change', () => {
   const item = catalogue.getSelectedItem();
   if (item) {
     let preview;
-    if (basket.isItemInBasket(item.id)) {
+
+    if (item.price === null) {
+      preview = new CardPreview(cloneTemplate('#card-preview'));
+      preview.buttonText = 'Недоступно';
+      preview.setButtonOff();
+    } else if (basket.isItemInBasket(item.id)) {
       preview = new CardPreview(cloneTemplate('#card-preview'), {
         onClick: () => {
           events.emit('basket:remove', item);
@@ -106,22 +124,17 @@ events.on('selectedItem:change', () => {
 
     modal.content = preview.render(item);
     modal.openModal();
-    console.log(item);
   } else {
     modal.closeModal();
   }
 });
 
 events.on('basket:open', () => {
-  const items = basket.getItemList();
-  if (items.length === 0) {
+  const itemNumber = basket.getItemNumber();
+  if (itemNumber === 0) {
     basketView.setEmptyBasket();
-    modal.content = basketView.render();
-  } else {
-    const itemsToRender = renderCardBasketList(items, events);
-    basketView.toggleButtonOn();
-    modal.content = basketView.render({ itemList: itemsToRender, total: basket.getTotal() });
   }
+  modal.content = basketView.render();
   modal.openModal();
 });
 
@@ -140,31 +153,31 @@ events.on('basket:change', () => {
     modal.content = basketView.render();
   } else {
     const itemsToRender = renderCardBasketList(items, events);
+    basketView.toggleButtonOn();
     modal.content = basketView.render({ itemList: itemsToRender, total: basket.getTotal() });
   }
   header.render({ counter: basket.getItemNumber() });
 });
 
 events.on('basket:submit', () => {
-  modal.render({ content: orderForm.render() });
+  const formData = { payment: customer.getData().payment, address: customer.getData().address };
+  modal.render({ content: orderForm.render(formData) });
 });
 
 events.on<iCustomer>('orderForm:change', (data) => {
   customer.setData(data);
-  const newData = customer.getData();
   const errors = customer.validateData();
-  if (errors.payment && errors.address) {
-    orderForm.render({ error: 'Введите адрес и выберите способ оплаты' });
-    orderForm.toggleSubmitOff();
-  } else if (errors.payment) {
-    orderForm.render({ error: errors.payment, address: newData.address, payment: newData.payment });
-    orderForm.toggleSubmitOff();
-  } else if (errors.address) {
-    orderForm.render({ error: errors.address, address: newData.address, payment: newData.payment });
-    orderForm.toggleSubmitOff();
-  } else {
-    orderForm.render({ error: '', address: newData.address, payment: newData.payment });
+  const orderErrors = { payment: errors.payment, address: errors.address };
+
+  const error = Object.values(orderErrors)
+    .filter((value) => !!value)
+    .join('; ');
+  orderForm.render({ error: error });
+
+  if (!orderErrors.payment && !orderErrors.address) {
     orderForm.toggleSubmitOn();
+  } else {
+    orderForm.toggleSubmitOff();
   }
 });
 
@@ -174,31 +187,33 @@ events.on('orderForm:submit', () => {
 
 events.on('contactForm:change', (data) => {
   customer.setData(data);
-  const newData = customer.getData();
   const errors = customer.validateData();
-  if (errors.email && errors.phone) {
-    contactForm.render({ error: 'Введите номер телефона и email' });
-    contactForm.toggleSubmitOff();
-  } else if (errors.phone) {
-    contactForm.render({ error: errors.phone, phone: newData.phone, email: newData.email });
-    contactForm.toggleSubmitOff();
-  } else if (errors.email) {
-    contactForm.render({ error: errors.email, phone: newData.phone, email: newData.email });
-    contactForm.toggleSubmitOff();
-  } else {
-    contactForm.render({ error: '', phone: newData.phone, email: newData.email });
+  const contactErrors = { phone: errors.phone, email: errors.email };
+  const error = Object.values(contactErrors)
+    .filter((value) => !!value)
+    .join('; ');
+  contactForm.render({ error: error });
+
+  if (!contactErrors.phone && !contactErrors.email) {
     contactForm.toggleSubmitOn();
+  } else {
+    contactForm.toggleSubmitOff();
   }
 });
 
 events.on('contactForm:submit', () => {
   const items = basket.getItemList().map((item) => item.id);
-  console.log(items);
   productApi
     .post({ ...customer.getData(), total: basket.getTotal(), items: items })
     .then((result) => {
       basket.clearBasket();
       customer.clearData();
       modal.content = successView.render({ total: result.total });
-    });
+    })
+    .catch((err) => console.log(err));
+});
+
+events.on<iCustomer>('customerData:change', (data) => {
+  orderForm.render({ payment: data.payment, address: data.address });
+  contactForm.render({ phone: data.phone, email: data.email });
 });

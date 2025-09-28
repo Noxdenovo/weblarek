@@ -1,6 +1,6 @@
-import { IEvents } from '../components/base/Events';
-import { iCustomer } from '../types';
-import { ensureElement } from '../utils/utils';
+import { IEvents } from '../base/Events';
+import { iCustomer } from '../../types';
+import { ensureElement } from '../../utils/utils';
 import { Form, TFormActions } from './Form';
 
 export type TOrderForm = { error: string } | Pick<iCustomer, 'address' | 'payment'>;

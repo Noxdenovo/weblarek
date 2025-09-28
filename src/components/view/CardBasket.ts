@@ -1,6 +1,5 @@
-import { IEvents } from '../components/base/Events';
-import { Product } from '../types';
-import { cloneTemplate, ensureElement } from '../utils/utils';
+import { Product } from '../../types';
+import { ensureElement } from '../../utils/utils';
 import { Card } from './Card';
 import { ICardActions } from './CardGallery';
 
@@ -23,16 +22,4 @@ export class CardBasket extends Card<TCardBasket> {
   set index(value: number) {
     this.indexElement.textContent = String(value);
   }
-}
-
-export function renderCardBasketList(items: Product[], events: IEvents) {
-  const itemsToRender = items.map((item) => {
-    const card = new CardBasket(cloneTemplate('#card-basket'), {
-      onClick: () => {
-        events.emit('basket:remove', item);
-      },
-    });
-    return card.render({ price: item.price, title: item.title, index: items.indexOf(item) + 1 });
-  });
-  return itemsToRender;
 }

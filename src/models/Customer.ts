@@ -11,7 +11,10 @@ interface Errors {
 export class Customer {
   private customerData: iCustomer;
 
-  constructor(events: IEvents, data?: Partial<iCustomer>) {
+  constructor(
+    protected events: IEvents,
+    data?: Partial<iCustomer>
+  ) {
     this.customerData = {
       payment: data?.payment ?? '',
       address: data?.address ?? '',
@@ -22,6 +25,7 @@ export class Customer {
 
   setData(data: Partial<iCustomer>) {
     this.customerData = { ...this.customerData, ...data };
+    this.events.emit('customerData:change', this.customerData);
   }
 
   getData(): iCustomer {
@@ -62,5 +66,6 @@ export class Customer {
       email: '',
       phone: '',
     };
+    this.events.emit('customerData:change', this.customerData);
   }
 }

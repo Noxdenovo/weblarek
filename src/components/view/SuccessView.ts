@@ -1,5 +1,5 @@
-import { Component } from '../components/base/Component';
-import { ensureElement } from '../utils/utils';
+import { Component } from '../base/Component';
+import { ensureElement } from '../../utils/utils';
 import { TFormActions } from './Form';
 
 type TSuccessView = { total: number };
